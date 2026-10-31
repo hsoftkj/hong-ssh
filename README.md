@@ -115,6 +115,14 @@ release/
 └─ win-unpacked/                  未压缩的运行目录
 ```
 
+## Code signing policy
+
+正式发布的安装包与便携版由 GitHub Actions 从公开源码构建，签名由 [SignPath.io](https://about.signpath.io) 提供、证书由 [SignPath Foundation](https://signpath.org) 持有：
+
+**Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).**
+
+团队职责、签名流程、签名验证方法与隐私声明见 [docs/code-signing.md](docs/code-signing.md)。
+
 安装程序是**按用户安装**（无需管理员权限），支持选择安装目录、创建桌面和开始菜单快捷方式。启动安装程序时会自动关闭所有正在运行的 `HongSSH.exe` 窗口，再替换文件，避免多开窗口占用文件导致升级失败；不需要手动退出应用。远程控制只通过 WebRTC 中继工作，不监听本地端口，也不需要配置 Windows 防火墙。当前安装包没有购买代码签名证书，Windows SmartScreen 可能提示“未知发布者”；点击“更多信息 → 仍要运行”即可。应用图标为深蓝色圆角方块中的 H 字母、安全锁和 SSH 标识，位于 `desktop/assets/icon.ico`，打包配置在 `package.json` 的 `build` 字段中；修改图标后可运行 `powershell -ExecutionPolicy Bypass -File scripts/make-icon.ps1` 重新生成 PNG/ICO。
 
 > 安装包和 `release/` 构建产物不进入 Git，需在本地执行上面的命令生成。

@@ -1,0 +1,24 @@
+<!--
+  SignPath Artifact Configuration
+  在 SignPath 控制台 → Project → Artifact Configurations 中新建，slug 建议用 `installers`，
+  把下面整段 XML 粘贴进去。
+
+  说明：
+  - upload-artifact 默认把上传内容打成 ZIP，所以根元素是 <zip-file>；
+  - pe-file-set 强制校验产品名与版本号，满足 SignPath 对“元数据约束”的要求；
+  - version 由工作流的 parameters 传入（见 .github/workflows/signpath-release.yml）。
+-->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file-set product-name="HongSSH" product-version="${version}">
+      <include path="HongSSH-*-setup.exe" />
+      <include path="HongSSH-*-portable.exe" />
+      <for-each>
+        <authenticode-sign />
+      </for-each>
+    </pe-file-set>
+  </zip-file>
+</artifact-configuration>
