@@ -1,4 +1,4 @@
-# 发布 HongSSH 1.0.1 到 GitHub Release
+﻿# 发布 HongSSH 1.0.1 到 GitHub Release
 #
 # 用法：
 #   pwsh -File scripts/publish-release.ps1                 # 立即尝试发布
@@ -7,7 +7,7 @@
 # 凭据来自 Git Credential Manager（git credential fill），不需要手动输入 token。
 
 param(
-  [string]$Repo = 'hongchekj/hong-ssh',
+  [string]$Repo = 'felix-zhao-hong/hong-ssh',
   [string]$Tag = 'release1.0.1',
   [string[]]$Assets = @('release\HongSSH-1.0.1-setup.exe', 'release\HongSSH-1.0.1-portable.exe'),
   [string]$NotesFile = 'docs\release-notes-1.0.1.md',
