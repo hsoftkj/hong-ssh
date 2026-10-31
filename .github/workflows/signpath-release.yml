@@ -30,6 +30,8 @@ permissions:
 jobs:
   build:
     name: Build unsigned installers
+    # SignPath 参数未配置前自动跳过，避免打 tag 时产生失败记录
+    if: ${{ vars.SIGNPATH_ORGANIZATION_ID != '' }}
     runs-on: windows-latest
     outputs:
       artifact-id: ${{ steps.upload.outputs.artifact-id }}
