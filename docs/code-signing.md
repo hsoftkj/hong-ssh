@@ -9,8 +9,8 @@ HongSSH 的所有 Windows 发布产物（`HongSSH-<version>-setup.exe`、`HongSS
 
 | 角色 | 成员 | 说明 |
 | --- | --- | --- |
-| Committers / Reviewers | [hongchekj Owners](https://github.com/orgs/hongchekj/people?query=role%3Aowner) | 有权合并代码、审核外部贡献 |
-| Approvers | [hongchekj Owners](https://github.com/orgs/hongchekj/people?query=role%3Aowner) | 每次签名请求都需要一名 Approver 在 SignPath 控制台手动批准 |
+| Committers / Reviewers | [@felix-zhao-hong](https://github.com/felix-zhao-hong) | 有权合并代码、审核外部贡献 |
+| Approvers | [@felix-zhao-hong](https://github.com/felix-zhao-hong) | 每次签名请求都需要一名 Approver 在 SignPath 控制台手动批准 |
 
 所有成员均已为 GitHub 与 SignPath 账号启用多因素认证（MFA）。
 
