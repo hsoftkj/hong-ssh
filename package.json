@@ -1,0 +1,110 @@
+{
+  "name": "hong-ssh",
+  "productName": "HongSSH",
+  "version": "1.0.1",
+  "private": true,
+  "description": "HongSSH - a fast, secure SSH terminal client for Windows",
+  "author": "hong",
+  "license": "MIT",
+  "main": "desktop/main.js",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "vite build",
+    "start": "npm run build && electron .",
+    "electron": "electron .",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/unit/xshell-import.test.mjs tests/unit/xshell-export.test.mjs tests/unit/drag-download.test.mjs tests/unit/inspection.test.mjs",
+    "test:ssh": "node tests/ssh-server.mjs",
+    "test:e2e": "node tests/e2e.mjs",
+    "screenshot": "node tests/screenshot.mjs",
+    "dist": "electron-builder --win nsis portable",
+    "dist:dir": "electron-builder --dir"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-search": "^0.15.0",
+    "@xterm/addon-unicode11": "^0.8.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/xterm": "^5.5.0",
+    "ssh2": "^1.16.0",
+    "werift": "^0.25.1",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/ssh2": "^1.15.1",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "node-pty": "^1.1.0",
+    "playwright-core": "^1.49.1",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11"
+  },
+  "build": {
+    "appId": "com.hongssh.desktop",
+    "productName": "HongSSH",
+    "copyright": "Copyright © 2026 HongSSH",
+    "asar": true,
+    "compression": "normal",
+    "npmRebuild": false,
+    "directories": {
+      "output": "release",
+      "buildResources": "desktop/assets"
+    },
+    "files": [
+      "desktop/**/*",
+      "dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "relay-server.js",
+        "to": "relay-server.js"
+      },
+      {
+        "from": "relay-server-README.md",
+        "to": "relay-server-README.md"
+      }
+    ],
+    "win": {
+      "icon": "desktop/assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "HongSSH",
+      "uninstallDisplayName": "HongSSH",
+      "runAfterFinish": true,
+      "installerLanguages": [
+        "zh_CN",
+        "en_US"
+      ],
+      "include": "desktop/installer.nsh",
+      "artifactName": "HongSSH-${version}-setup.${ext}"
+    },
+    "portable": {
+      "artifactName": "HongSSH-${version}-portable.${ext}"
+    }
+  }
+}

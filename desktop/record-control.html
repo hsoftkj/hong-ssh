@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>正在录屏</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        user-select: none;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+      }
+      .bar {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 12px;
+        border-radius: 14px;
+        background: rgba(17, 20, 27, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42);
+        color: #f1f4fa;
+        cursor: grab;
+        touch-action: none;
+      }
+      .bar.dragging {
+        cursor: grabbing;
+      }
+      .grip {
+        flex: 0 0 auto;
+        display: grid;
+        grid-template-columns: repeat(2, 3px);
+        grid-auto-rows: 3px;
+        gap: 2px;
+        opacity: 0.55;
+      }
+      .grip i {
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #f05252;
+        box-shadow: 0 0 0 4px rgba(240, 82, 82, 0.16);
+        flex: 0 0 auto;
+      }
+      .text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        flex: 1;
+      }
+      .title {
+        font-size: 12px;
+        color: #c5cdda;
+      }
+      .time {
+        font-size: 17px;
+        font-weight: 650;
+        letter-spacing: 0.4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .stop {
+        -webkit-app-region: no-drag;
+        height: 33px;
+        padding: 0 13px;
+        border: 1px solid #e5484d;
+        border-radius: 9px;
+        background: #d93f45;
+        color: #fff;
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .stop:hover {
+        background: #e5484d;
+      }
+      .stop:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .hint {
+        font-size: 10px;
+        color: #8f99a9;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar" title="按住拖动可移动录制区域；Ctrl+Shift+F10 停止">
+      <span class="grip" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </span>
+      <span class="dot"></span>
+      <div class="text">
+        <span class="title">正在录制区域</span>
+        <span class="time" id="time">00:00</span>
+      </div>
+      <span class="hint">Ctrl+Shift+F10</span>
+      <button class="stop" id="stop" type="button">停止</button>
+    </div>
+    <script src="record-control.js"></script>
+  </body>
+</html>

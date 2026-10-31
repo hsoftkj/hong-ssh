@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>选择录屏区域</title>
+    <link rel="stylesheet" href="screen-recorder.css" />
+  </head>
+  <body>
+    <img id="snapshot" alt="" />
+    <div id="dim"></div>
+    <div id="selection" hidden>
+      <span class="handle" data-handle="nw"></span>
+      <span class="handle" data-handle="n"></span>
+      <span class="handle" data-handle="ne"></span>
+      <span class="handle" data-handle="e"></span>
+      <span class="handle" data-handle="se"></span>
+      <span class="handle" data-handle="s"></span>
+      <span class="handle" data-handle="sw"></span>
+      <span class="handle" data-handle="w"></span>
+    </div>
+    <div id="hint">拖动框选要录制的屏幕区域 · Esc 取消</div>
+    <div id="actions" hidden>
+      <span id="size"></span>
+      <button id="reselect" type="button">重选</button>
+      <button id="cancel" type="button">取消</button>
+      <button id="start" type="button" class="primary">开始录制</button>
+    </div>
+    <script src="region-select.js"></script>
+  </body>
+</html>

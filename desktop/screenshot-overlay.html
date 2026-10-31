@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>框选截图</title>
+    <link rel="stylesheet" href="screenshot-overlay.css" />
+  </head>
+  <body>
+    <img id="snapshot" alt="" draggable="false" />
+    <div id="dim"></div>
+    <div id="hint">拖动框选要截图的区域 · Esc 取消</div>
+    <div id="selection" hidden>
+      <canvas id="annotations"></canvas>
+      <div id="annotationSelection" hidden></div>
+      <span class="handle" data-handle="nw"></span>
+      <span class="handle" data-handle="n"></span>
+      <span class="handle" data-handle="ne"></span>
+      <span class="handle" data-handle="e"></span>
+      <span class="handle" data-handle="se"></span>
+      <span class="handle" data-handle="s"></span>
+      <span class="handle" data-handle="sw"></span>
+      <span class="handle" data-handle="w"></span>
+    </div>
+    <div id="sizeBadge" hidden></div>
+    <div id="toolbar" hidden></div>
+    <div id="toolMenu" hidden></div>
+    <div id="textEditor" hidden><input id="textInput" type="text" spellcheck="false" /></div>
+    <script src="screenshot-overlay.js"></script>
+  </body>
+</html>

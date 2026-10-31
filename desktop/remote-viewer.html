@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HongSSH 远程桌面</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #05080d;
+        color: #e6ebf2;
+      }
+      body { display: flex; flex-direction: column; }
+      .remote-bar {
+        height: 42px;
+        flex: 0 0 42px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 12px;
+        border-bottom: 1px solid #1d2530;
+        background: #0b0f15;
+        user-select: none;
+      }
+      .remote-title {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+      .remote-name {
+        max-width: 46%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 13px;
+        font-weight: 650;
+      }
+      .remote-address {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: "Cascadia Mono", Consolas, monospace;
+        font-size: 11px;
+        color: #7c899b;
+      }
+      .remote-status {
+        margin-left: auto;
+        font-size: 11px;
+        color: #7c899b;
+      }
+      .remote-status.is-connected { color: #3ddc97; }
+      .remote-status.is-error { color: #ff6b5e; }
+      .remote-actions { display: flex; align-items: center; gap: 6px; }
+      .remote-display-select {
+        height: 27px;
+        max-width: 170px;
+        padding: 0 6px;
+        border: 1px solid #232c39;
+        border-radius: 6px;
+        background: #141a23;
+        color: #cbd5e1;
+        font-size: 11.5px;
+      }
+      .remote-display-select.is-hidden { display: none; }
+      .remote-button {
+        height: 27px;
+        padding: 0 10px;
+        border: 1px solid #232c39;
+        border-radius: 6px;
+        background: #141a23;
+        color: #cbd5e1;
+        font-size: 11.5px;
+        cursor: pointer;
+      }
+      .remote-button:hover:not(:disabled) { background: #1a2230; border-color: #334051; }
+      .remote-button:disabled { opacity: 0.45; cursor: default; }
+      .remote-stage {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        background: #000;
+      }
+      #remote-canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        cursor: none;
+        outline: none;
+      }
+      .remote-cursor {
+        position: absolute;
+        width: 18px;
+        height: 24px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='24' viewBox='0 0 18 24'%3E%3Cpath d='M1 1 L1 19 L6 14 L9 21 L12 19.5 L9 13 L16 13 Z' fill='white' stroke='black' stroke-width='1.25' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-size: 18px 24px;
+        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55));
+        pointer-events: none;
+        display: none;
+      }
+      .remote-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+      .remote-overlay-card {
+        max-width: 520px;
+        padding: 18px 22px;
+        border: 1px solid #232c39;
+        border-radius: 10px;
+        background: rgba(11, 15, 21, 0.92);
+        text-align: center;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+      }
+      .remote-overlay-title { font-size: 14px; font-weight: 650; margin: 0 0 6px; }
+      .remote-overlay-text { margin: 0; font-size: 11.5px; line-height: 1.6; color: #7c899b; }
+      .remote-overlay.is-hidden { display: none; }
+      .display-chooser {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        margin-top: 14px;
+        pointer-events: auto;
+      }
+      .display-chooser.is-hidden { display: none; }
+      .display-choice {
+        padding: 9px 12px;
+        border: 1px solid #232c39;
+        border-radius: 7px;
+        background: #141a23;
+        color: #e6ebf2;
+        font-size: 12px;
+        text-align: left;
+        cursor: pointer;
+      }
+      .display-choice:hover {
+        border-color: #4c8dff;
+        background: #1a2230;
+      }
+      .display-choice small {
+        display: block;
+        margin-top: 2px;
+        font-family: "Cascadia Mono", Consolas, monospace;
+        font-size: 10px;
+        color: #7c899b;
+      }
+      .remote-spinner {
+        width: 24px;
+        height: 24px;
+        margin: 0 auto 10px;
+        border: 2px solid #232c39;
+        border-top-color: #4c8dff;
+        border-radius: 50%;
+        animation: remote-spin 0.8s linear infinite;
+      }
+      @keyframes remote-spin { to { transform: rotate(360deg); } }
+      .remote-files {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 330px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+        border-left: 1px solid #1d2530;
+        background: rgba(10, 14, 20, 0.97);
+        z-index: 5;
+      }
+      .remote-files.is-hidden { display: none; }
+      .files-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12.5px;
+        font-weight: 650;
+      }
+      .files-hint {
+        margin: 0;
+        font-family: "Cascadia Mono", Consolas, monospace;
+        font-size: 10.5px;
+        color: #7c899b;
+        word-break: break-all;
+      }
+      .files-actions { display: flex; gap: 6px; }
+      .files-list {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        border-top: 1px solid #1d2530;
+        border-bottom: 1px solid #1d2530;
+      }
+      .file-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 2px;
+        border-bottom: 1px solid rgba(35, 44, 57, 0.6);
+      }
+      .file-main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+      .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+      .file-size { font-family: "Cascadia Mono", Consolas, monospace; font-size: 10px; color: #7c899b; }
+      .files-progress { max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+      .progress-row { font-size: 10.5px; color: #aab6c6; }
+      .progress-bar { height: 3px; margin-top: 3px; border-radius: 2px; background: #1d2530; overflow: hidden; }
+      .progress-bar span { display: block; height: 100%; background: #4c8dff; }
+      .progress-row.is-done { color: #3ddc97; }
+      .progress-row.is-error { color: #ff6b5e; }
+    </style>
+  </head>
+  <body>
+    <header class="remote-bar">
+      <div class="remote-title">
+        <span class="remote-name" id="remote-name">远程桌面</span>
+        <span class="remote-address" id="remote-address"></span>
+        <span class="remote-status" id="remote-status">连接中…</span>
+      </div>
+      <div class="remote-actions">
+        <select class="remote-display-select is-hidden" id="display-select" title="选择要控制的显示器"></select>
+        <button class="remote-button" type="button" id="file-button">文件</button>
+        <button class="remote-button" type="button" id="reconnect-button">重新连接</button>
+        <button class="remote-button" type="button" id="fullscreen-button">全屏</button>
+      </div>
+    </header>
+    <main class="remote-stage" id="remote-stage">
+      <canvas id="remote-canvas" tabindex="0"></canvas>
+      <div class="remote-cursor" id="remote-cursor"></div>
+      <div class="remote-overlay" id="remote-overlay">
+        <div class="remote-overlay-card">
+          <div class="remote-spinner" id="remote-spinner"></div>
+          <h1 class="remote-overlay-title" id="remote-overlay-title">正在连接…</h1>
+          <p class="remote-overlay-text" id="remote-overlay-text">正在连接对方的 HongSSH。</p>
+          <div class="display-chooser is-hidden" id="display-chooser"></div>
+        </div>
+      </div>
+      <aside class="remote-files is-hidden" id="remote-files">
+        <header class="files-header">
+          <span>共享文件夹</span>
+          <button class="remote-button" type="button" id="files-close">关闭</button>
+        </header>
+        <p class="files-hint" id="files-dir">正在读取…</p>
+        <div class="files-actions">
+          <button class="remote-button" type="button" id="files-upload">上传文件</button>
+          <button class="remote-button" type="button" id="files-refresh">刷新</button>
+        </div>
+        <div class="files-list" id="files-list"></div>
+        <div class="files-progress" id="files-progress"></div>
+      </aside>
+    </main>
+    <script src="remote-viewer.js"></script>
+  </body>
+</html>
